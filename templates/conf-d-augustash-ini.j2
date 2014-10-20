@@ -1,0 +1,7 @@
+; {{ ansible_managed }}
+;
+; Custom php.ini overrides
+
+{% for key,value in phpini.iteritems() %}
+{{ key }} = {{ value }}
+{% endfor %}

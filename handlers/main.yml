@@ -1,0 +1,19 @@
+---
+# Handlers for PHP notifications.
+
+- name: stop php-fpm
+  service: >
+    name={{ php_service }}
+    state=stopped
+
+- name: start php-fpm
+  service: >
+    name={{ php_service }}
+    state=started
+    enabled=yes
+
+- name: restart php-fpm
+  service: >
+    name={{ php_service }}
+    state=restarted
+    enabled=yes

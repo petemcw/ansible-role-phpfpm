@@ -1,0 +1,91 @@
+---
+# The variables file used by webserver server playbooks.
+# If not overriden in inventory or as a parameter, this is the value that will be used
+
+phpfpm_pid: '/var/run/php5-fpm.pid'
+phpfpm_error_log: '/var/log/php5-fpm.log'
+phpfpm_log_level: 'notice'
+phpfpm_emergency_restart_threshold: 10
+phpfpm_emergency_restart_interval: '1m'
+phpfpm_process_control_timeout: '10s'
+phpfpm_user: 'nginx'
+phpfpm_group: 'nginx'
+phpfpm_use_socket: true
+
+phpfpm_wwwpool_listen_socket: '/var/run/php5-fpm.sock'
+phpfpm_wwwpool_listen_tcp: '127.0.0.1:9000'
+phpfpm_wwwpool_listen_mode: '0660'
+phpfpm_wwwpool_listen_allowed_clients: '127.0.0.1'
+phpfpm_wwwpool_pm_max_children: 10
+phpfpm_wwwpool_pm_start_servers: 4
+phpfpm_wwwpool_pm_min_spare_servers: 2
+phpfpm_wwwpool_pm_max_spare_servers: 6
+phpfpm_wwwpool_pm_max_requests: 500
+phpfpm_wwwpool_pm_status_path: ''
+phpfpm_wwwpool_ping_path: ''
+phpfpm_wwwpool_ping_response: 'pong'
+phpfpm_wwwpool_slowlog: '/var/log/nginx/$pool.slow.log'
+phpfpm_wwwpool_request_slowlog_timeout: '5s'
+phpfpm_wwwpool_request_terminate_timeout: '120s'
+phpfpm_wwwpool_rlimit_files: 131072
+phpfpm_wwwpool_rlimit_core: 'unlimited'
+phpfpm_wwwpool_chdir: '/'
+phpfpm_wwwpool_catch_workers_output: 'yes'
+phpfpm_wwwpool_php_flag: ~
+phpfpm_wwwpool_php_admin_flag: ~
+phpfpm_wwwpool_php_admin_value: ~
+
+phpini:
+  short_open_tag: 'Off'
+  zlib.output_compression: 'On'
+  safe_mode: 'Off'
+  realpath_cache_size: '128k'
+  realpath_cache_ttl: 120
+  zend.ze1_compatibility_mode: 'Off'
+  expose_php: 'Off'
+  max_execution_time: 120
+  memory_limit: '128M'
+  error_reporting: 'E_ALL & ~E_DEPRECATED'
+  display_errors: 'Off'
+  log_errors: 'On'
+  error_log: 'STDERR'
+  register_globals: 'Off'
+  post_max_size: '32M'
+  magic_quotes_gpc: 'Off'
+  magic_quotes_runtime: 'Off'
+  include_path: '.:/usr/share/php:/usr/share/pear'
+  cgi.fix_pathinfo: 0
+  upload_max_filesize: '30M'
+  allow_url_fopen: 'On'
+  allow_url_include: 'Off'
+  date.timezone: 'Etc/UTC'
+  session.auto_start: 0
+
+phpapc:
+  enabled: 1
+  shm_segments: 1
+  shm_size: '128M'
+  max_file_size: '2M'
+  num_files_hint: 10000
+  user_entries_hint: 10000
+  ttl: 7200
+  user_ttl: 7200
+  gc_ttl: 3600
+  stat: 1
+  enable_cli: 0
+  file_update_protection: 2
+  cache_by_default: 1
+  include_once_override: 0
+  use_request_time: 1
+  slam_defense: 0
+  stat_ctime: 0
+  canonicalize: 1
+  write_lock: 1
+  report_autofilter: 0
+  rfc1867: 0
+  rfc1867_prefix : 'upload_'
+  rfc1867_name: 'APC_UPLOAD_PROGRESS'
+  rfc1867_freq: 0
+  rfc1867_ttl: 3600
+  lazy_classes: 0
+  lazy_functions: 0

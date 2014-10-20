@@ -1,0 +1,101 @@
+---
+# Defines tasks to install and configure PHP-FPM
+
+- name: Include the OS specific varibles
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags:
+    - php
+
+- name: Install packages for Debian derivatives
+  apt: >
+    pkg={{ item }}
+    update_cache=yes
+    state=latest
+  with_items: php_packages
+  when: ansible_os_family == 'Debian'
+  tags:
+    - php
+
+- name: Ensure proper directories exist
+  file: >
+    path={{ item }}
+    state=directory
+    mode=0755 owner=root group=root
+  with_items:
+    - "{{ php_config_dir }}/conf.d"
+    - "{{ php_config_dir }}/fpm"
+    - "{{ php_config_dir }}/fpm/pool.d"
+  when: ansible_os_family == 'Debian' and ansible_distribution_version == '12.04'
+  tags:
+    - php
+
+- name: Ensure proper directories exist
+  file: >
+    path={{ item }}
+    state=directory
+    mode=0755 owner=root group=root
+  with_items:
+    - "{{ php_config_dir }}/mods-available"
+    - "{{ php_config_dir }}/fpm"
+    - "{{ php_config_dir }}/fpm/pool.d"
+  when: ansible_os_family == 'Debian' and ansible_distribution_version == '14.04'
+  tags:
+    - php
+
+- name: Write configuration templates
+  template: >
+    src={{ item.src }}
+    dest={{ item.dest }}
+    mode=0644 owner=root group=root
+    backup=yes
+  with_items:
+      - { src: 'fpm-conf.j2', dest: '{{ php_config_dir }}/fpm/php-fpm.conf' }
+      - { src: 'www-conf.j2', dest: '{{ php_config_dir }}/fpm/pool.d/www.conf' }
+      - { src: 'conf-d-apc-ini.j2', dest: '{{ php_config_dir }}/conf.d/apc.ini' }
+      - { src: 'conf-d-augustash-ini.j2', dest: '{{ php_config_dir }}/conf.d/zzz_augustash.ini' }
+  when: ansible_os_family == 'Debian' and ansible_distribution_version == '12.04'
+  notify:
+    - restart php-fpm
+  tags:
+    - php
+
+- name: Write configuration templates
+  template: >
+    src={{ item.src }}
+    dest={{ item.dest }}
+    mode=0644 owner=root group=root
+    backup=yes
+  with_items:
+      - { src: 'fpm-conf.j2', dest: '{{ php_config_dir }}/fpm/php-fpm.conf' }
+      - { src: 'www-conf.j2', dest: '{{ php_config_dir }}/fpm/pool.d/www.conf' }
+      - { src: 'conf-d-apc-ini.j2', dest: '{{ php_mods_dir }}/apc.ini' }
+      - { src: 'conf-d-augustash-ini.j2', dest: '{{ php_mods_dir }}/augustash.ini' }
+  when: ansible_os_family == 'Debian' and ansible_distribution_version == '14.04'
+  notify:
+    - restart php-fpm
+  tags:
+    - php
+
+- name: Enable .ini modifications
+  file: >
+    src={{ item.src }}
+    dest={{ item.dest }}
+    state=link force=yes
+    owner=root group=root
+  with_items:
+      - { src: '{{ php_mods_dir }}/apc.ini', dest: '{{ php_config_dir }}/fpm/conf.d/05-apc.ini' }
+      - { src: '{{ php_mods_dir }}/mcrypt.ini', dest: '{{ php_config_dir }}/fpm/conf.d/20-mcrypt.ini' }
+      - { src: '{{ php_mods_dir }}/augustash.ini', dest: '{{ php_config_dir }}/fpm/conf.d/90-augustash.ini' }
+  when: ansible_os_family == 'Debian' and ansible_distribution_version == '14.04'
+  notify:
+    - restart php-fpm
+  tags:
+    - php
+
+- name: Start on server boot
+  service: >
+    name={{ php_service }}
+    state=started
+    enabled=yes
+  tags:
+    - php

@@ -1,0 +1,123 @@
+; {{ ansible_managed }}
+;
+[www]
+
+; Unix user/group of processes
+user  = {{ phpfpm_user }}
+group = {{ phpfpm_group }}
+
+; The address on which to accept FastCGI requests.
+{% if phpfpm_use_socket|bool == true %}
+listen = {{ phpfpm_wwwpool_listen_socket }};
+{% else %}
+listen = {{ phpfpm_wwwpool_listen_tcp }};
+{% endif %}
+
+; Set permissions for unix socket, if one is used.
+listen.owner = {{ phpfpm_user }}
+listen.group = {{ phpfpm_group }}
+listen.mode  = {{ phpfpm_wwwpool_listen_mode }}
+
+; List of ipv4 addresses of FastCGI clients which are allowed to connect.
+listen.allowed_clients = {{ phpfpm_wwwpool_listen_allowed_clients }}
+
+; Choose how the process manager will control the number of child processes.
+pm = dynamic
+
+; The number of child processes to be created when pm is set to 'static' and the
+; maximum number of child processes when pm is set to 'dynamic' or 'ondemand'.
+; This value sets the limit on the number of simultaneous requests that will be
+; served. Equivalent to the ApacheMaxClients directive with mpm_prefork.
+; Equivalent to the PHP_FCGI_CHILDREN environment variable in the original PHP
+; CGI. The below defaults are based on a server without much resources. Don't
+; forget to tweak pm.* to fit your needs.
+pm.max_children = {{ phpfpm_wwwpool_pm_max_children }}
+
+; The number of child processes created on startup.
+; Default Value: min_spare_servers + (max_spare_servers - min_spare_servers) / 2
+pm.start_servers = {{ phpfpm_wwwpool_pm_start_servers }}
+
+; The desired minimum number of idle server processes.
+pm.min_spare_servers = {{ phpfpm_wwwpool_pm_min_spare_servers }}
+
+; The desired maximum number of idle server processes.
+pm.max_spare_servers = {{ phpfpm_wwwpool_pm_max_spare_servers }}
+
+; The number of requests each child process should execute before respawning.
+; This can be useful to work around memory leaks in 3rd party libraries. For
+; endless request processing specify '0'. Equivalent to PHP_FCGI_MAX_REQUESTS.
+; Default Value: 0
+pm.max_requests = {{ phpfpm_wwwpool_pm_max_requests }}
+
+; The URI to view the FPM status page.
+; Default Value: not set
+;pm.status_path = {{ phpfpm_wwwpool_pm_status_path }}
+
+; The ping URI to call the monitoring page of FPM.
+; Default Value: not set
+;ping.path = {{ phpfpm_wwwpool_ping_path }}
+
+; This directive may be used to customize the response of a ping request. The
+; response is formatted as text/plain with a 200 response code.
+; Default Value: pong
+;ping.response = {{ phpfpm_wwwpool_ping_response }}
+
+; The log file for slow requests
+; Default Value: not set
+slowlog = {{ phpfpm_wwwpool_slowlog }}
+
+; The timeout for serving a single request after which a PHP backtrace will be
+; dumped to the 'slowlog' file. A value of '0s' means 'off'.
+; Available units: s(econds)(default), m(inutes), h(ours), or d(ays)
+; Default Value: 0
+request_slowlog_timeout = {{ phpfpm_wwwpool_request_slowlog_timeout }}
+
+; The timeout for serving a single request after which the worker process will
+; be killed. This option should be used when the 'max_execution_time' ini option
+; does not stop script execution for some reason. A value of '0' means 'off'.
+; Available units: s(econds)(default), m(inutes), h(ours), or d(ays)
+; Default Value: 0
+request_terminate_timeout = {{ phpfpm_wwwpool_request_terminate_timeout }}
+
+; Set open file descriptor rlimit.
+; Default Value: system defined value
+rlimit_files = {{ phpfpm_wwwpool_rlimit_files }}
+
+; Set max core size rlimit.
+; Possible Values: 'unlimited' or an integer greater or equal to 0
+; Default Value: system defined value
+rlimit_core = {{ phpfpm_wwwpool_rlimit_core }}
+
+; Chdir to this directory at the start.
+; Note: relative path can be used.
+; Default Value: current directory or / when chroot
+chdir = {{ phpfpm_wwwpool_chdir }}
+
+; Redirect worker stdout and stderr into main error log. If not set, stdout and
+; stderr will be redirected to /dev/null according to FastCGI specs.
+; Note: on highloaded environement, this can cause some delay in the page
+; process time (several ms).
+; Default Value: no
+catch_workers_output = {{ phpfpm_wwwpool_catch_workers_output }}
+
+; Additional php.ini defines, specific to this pool of workers. These settings
+; overwrite the values previously defined in the php.ini.
+;
+; For php_*flag, valid values are on, off, 1, 0, true, false, yes or no.
+{% if phpfpm_wwwpool_php_flag is not none %}
+{% for key, value in phpfpm_wwwpool_php_flag.iteritems() %}
+php_flag[{{ key }}] = {{ value }}
+{% endfor %}
+{% endif %}
+
+{% if phpfpm_wwwpool_php_admin_flag is not none %}
+{% for key, value in phpfpm_wwwpool_php_admin_flag.iteritems() %}
+php_admin_flag[{{ key }}] = {{ value }}
+{% endfor %}
+{% endif %}
+
+{% if phpfpm_wwwpool_php_admin_value is not none %}
+{% for key, value in phpfpm_wwwpool_php_admin_value.iteritems() %}
+php_admin_value[{{ key }}] = {{ value }}
+{% endfor %}
+{% endif %}

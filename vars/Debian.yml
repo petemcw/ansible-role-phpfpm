@@ -1,0 +1,21 @@
+---
+# Defines variables for Debian/Ubuntu
+
+php_service: 'php5-fpm'
+php_config_dir: '/etc/php5'
+php_mods_dir: '/etc/php5/mods-available'
+php_packages:
+  - 'php5'
+  - 'php5-cli'
+  - 'php5-common'
+  - 'php5-curl'
+  - 'php5-dev'
+  - 'php5-fpm'
+  - 'php5-gd'
+  - 'php5-imagick'
+  - 'php5-mcrypt'
+  - 'php5-mysql'
+  - 'php5-xmlrpc'
+  - 'php-apc'
+  - 'php-soap'
+  - 'mcrypt'

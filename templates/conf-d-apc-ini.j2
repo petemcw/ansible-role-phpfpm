@@ -1,0 +1,8 @@
+; {{ ansible_managed }}
+
+[APC]
+extension=apc.so
+
+{% for key,value in phpapc.iteritems() %}
+apc.{{ key }} = {{ value }}
+{% endfor %}
