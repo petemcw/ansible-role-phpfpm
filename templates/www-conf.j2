@@ -8,9 +8,9 @@ group = {{ phpfpm_group }}
 
 ; The address on which to accept FastCGI requests.
 {% if phpfpm_use_socket|bool == true %}
-listen = {{ phpfpm_wwwpool_listen_socket }};
+listen = {{ phpfpm_wwwpool_listen_socket }}
 {% else %}
-listen = {{ phpfpm_wwwpool_listen_tcp }};
+listen = {{ phpfpm_wwwpool_listen_tcp }}
 {% endif %}
 
 ; Set permissions for unix socket, if one is used.
